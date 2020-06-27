@@ -1,0 +1,53 @@
+{% extends 'accounts/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Courses{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- COURSES -->
+    <p class="h3 text-center">Courses under Me</p>
+    {% if user.is_instructor %}
+    <div class="my-2 text-right">
+        <a href="{% url 'attendance:course_create' %}" class="btn btn-primary">Add Course</a>
+    </div>
+    {% endif %}
+    <table class="table table-bordered">
+        {% include 'attendance/partials/_messages.html' %}
+        <thead>
+            <tr>
+                <th>Course Name</th>
+                <th>Students Enrolled</th>
+                <th>Start Lesson</th>
+                <th>Attendance</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if courses %}
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.students.count }}</td>
+                <td>
+                    <a href="{% url 'attendance:live_attendance' pk=course.pk %}" class="btn btn-primary btn-block {% if course.enrolments.count < 1 %}disabled{% endif %}">Start</a>
+                </td>
+                <td>
+                    <a href="{% url 'attendance:attendance' pk=course.pk %}" class="btn btn-success btn-block">Attendance</a>
+                </td>
+                <td>
+                    <a href="{% url 'attendance:course_delete' pk=course.pk %}" class="btn btn-danger btn-block">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center text-danger">There are no courses under you yet...</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
+

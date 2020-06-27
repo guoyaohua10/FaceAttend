@@ -1,0 +1,67 @@
+{% extends 'accounts/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load widget_tweaks %}
+
+{% block title %}Attendance Record{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- NEW LESSON -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="border p-4">
+                {% for attendance in course.attendance.all %}
+                    <p class="h5 my-3">
+                        <a class="attendance_view" href="{% url 'attendance:view_attendance' pk=attendance.pk %}">{{ attendance.timestamp }}</a>
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="border p-4">
+                <span id="render"></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+$(document).ready(function () {
+    $('#render').html(`<p class="h4 text-success text-center">Click an entry on left to load data</p>`)
+    $(document).on('click', '.attendance_view', function (e) {
+        e.preventDefault()
+        $("a.attendance_view").removeClass("active");
+        $(this).addClass('active')
+        var link =  $(this).attr('href')
+        $.ajax({
+            type: 'GET',
+            url: link,
+            success: function (res) {
+                $('#render').html(res)
+                console.log(res)
+            }
+        })
+    })
+
+    $(document).on('click', '.proof', function (e) {
+        e.preventDefault()
+        $("a.proof").removeClass("active");
+        $(this).addClass('active')
+        var url =  $(this).attr('href')
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (res) {
+                $('#render_proof').html(res)
+                console.log(res)
+            }
+        })
+    })
+})
+</script>
+{% endblock javascript %}
